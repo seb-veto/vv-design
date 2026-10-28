@@ -12,7 +12,7 @@ export function vvFileURL(path: string | null): URL | null {
     const url = new URL(path)
     return url.origin === serverOrigin &&
       url.pathname.startsWith('/files/') &&
-      url.pathname.endsWith('.fig') &&
+      /\.fig$/i.test(url.pathname) &&
       !url.username &&
       !url.password &&
       !url.search &&
@@ -48,6 +48,7 @@ export async function writeVVFile(url: URL, data: Uint8Array): Promise<void> {
     body: new Uint8Array(data)
   })
   if (!response.ok) throw new Error(`VV Design save failed (${response.status})`)
+  window.dispatchEvent(new Event('vv-design:file-saved'))
 }
 
 export function newVVFileURL(name: string): URL {
@@ -55,4 +56,18 @@ export function newVVFileURL(name: string): URL {
     `/files/${crypto.randomUUID()}/${encodeURIComponent(name.replace(/\.fig$/i, ''))}.fig`,
     serverOrigin
   )
+}
+
+export function vvDocumentURL(path: string): URL {
+  return new URL(`/files/${path.split('/').map(encodeURIComponent).join('/')}`, serverOrigin)
+}
+
+export function vvDocumentPath(url: string | null): string | null {
+  const file = vvFileURL(url)
+  if (!file) return null
+  try {
+    return file.pathname.slice('/files/'.length).split('/').map(decodeURIComponent).join('/')
+  } catch {
+    return null
+  }
 }

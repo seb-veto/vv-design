@@ -52,6 +52,7 @@ import EditorWorkspace from '@/components/editor/EditorWorkspace.vue'
 import FileApiBanner from '@/components/FileApiBanner.vue'
 import FontStatusBanner from '@/components/font-status/FontStatusBanner.vue'
 import HomeWorkspace from '@/components/home/HomeWorkspace.vue'
+import VVHomeWorkspace from '@/components/home/VVHomeWorkspace.vue'
 import RenameSelectionDialog from '@/components/selection/RenameSelectionDialog.vue'
 import LoadingScreen from '@/components/shell/LoadingScreen.vue'
 import TabBar from '@/components/TabBar.vue'
@@ -82,7 +83,8 @@ const createdInitialTab = tabCount() === 0
 // Home is pinned first everywhere but tests and the demo, and opens in front where it lists
 // something: recent files, or the workspaces of the Cloud server that serves the editor.
 const pinHome = !appRuntimeConfig.test && !route.meta.demo
-const showHomeFirst = route.path === '/' && pinHome && (recentFilesAvailable() || IS_CLOUD_SITE)
+const showHomeFirst =
+  route.path === '/' && pinHome && (IS_VV_DESIGN || recentFilesAvailable() || IS_CLOUD_SITE)
 // The view stays mounted from /demo to /, so Home is pinned once a route that has it is reached.
 watch(
   () => !appRuntimeConfig.test && !route.meta.demo,
@@ -312,7 +314,12 @@ onUnmounted(() => {
     <RenameSelectionDialog />
     <CommandPalette />
     <TabBar />
-    <HomeWorkspace v-show="activeTab?.kind === 'home'" @new-document="createTab()" />
+    <VVHomeWorkspace
+      v-if="IS_VV_DESIGN"
+      v-show="activeTab?.kind === 'home'"
+      @new-document="createTab()"
+    />
+    <HomeWorkspace v-else v-show="activeTab?.kind === 'home'" @new-document="createTab()" />
     <CloudVersionDialog />
     <EditorWorkspace v-if="shown && shown.tab.kind !== 'home'" :key="shown.key" :tab="shown.tab" />
     <LoadingScreen v-if="openingCloudLink" />

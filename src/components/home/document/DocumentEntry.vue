@@ -10,6 +10,7 @@ const {
   name,
   metadata,
   previewURL,
+  help,
   view = 'grid',
   disabled = false,
   class: className
@@ -17,6 +18,7 @@ const {
   name: string
   metadata: string
   previewURL?: string | null
+  help?: string
   view?: 'grid' | 'list'
   disabled?: boolean
   class?: HTMLAttributes['class']
@@ -30,6 +32,7 @@ const styles = computed(() => documentEntry({ view }))
     <button
       type="button"
       :disabled="disabled"
+      :aria-description="help"
       data-slot="trigger"
       :class="styles.trigger()"
       @click="emit('open')"
