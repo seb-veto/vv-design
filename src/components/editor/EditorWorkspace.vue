@@ -3,11 +3,13 @@ import { SplitterGroup, SplitterPanel, SplitterResizeHandle } from 'reka-ui'
 import { tv } from 'tailwind-variants'
 import { computed } from 'vue'
 
+import { hasPrototypeInteractions, playIslandRoots } from '@open-pencil/core'
 import { formatShortcut } from '@open-pencil/vue/editor/commands'
 import { useViewportKind } from '@open-pencil/vue/editor/viewport-kind'
 import { useI18n } from '@open-pencil/vue/i18n'
 
 import { provideTabEditorStore } from '@/app/editor/active-store'
+import { startPreview } from '@/app/editor/prototype/preview'
 import { appRuntimeConfig } from '@/app/runtime/config'
 import { loadEditorLayout, saveEditorLayout } from '@/app/shell/layout-storage'
 import { appMenuShortcut } from '@/app/shell/menu/shortcut'
@@ -22,6 +24,7 @@ import LayersPanel from '@/components/LayersPanel.vue'
 import MobileDrawer from '@/components/MobileDrawer.vue'
 import MobileHud from '@/components/MobileHud/MobileHud.vue'
 import PropertiesPanel from '@/components/PropertiesPanel.vue'
+import PrototypePlayer from '@/components/prototype/PrototypePlayer.vue'
 import StatusesDialog from '@/components/statuses/StatusesDialog.vue'
 import Toolbar from '@/components/toolbar/Toolbar.vue'
 import IconButton from '@/components/ui/button/IconButton.vue'
@@ -44,7 +47,18 @@ const { isMobile } = useViewportKind()
 const initialEditorLayout = loadEditorLayout()
 const horizontalSplitterStyles = tv(splitterTheme)({ direction: 'horizontal' })
 /** One canvas previewing takes the whole window, in the canvas-only layout; split view keeps panels. */
-const playingAlone = computed(() => store.state.play !== null && store.visiblePaneCount.value <= 1)
+const prototypePlaying = computed(() => {
+  void store.state.sceneVersion
+  return (
+    IS_VV_DESIGN &&
+    store.state.play !== null &&
+    (hasPrototypeInteractions(store.graph, store.state.currentPageId) ||
+      playIslandRoots(store.graph, store.state.currentPageId).length === 0)
+  )
+})
+const playingAlone = computed(
+  () => store.state.play !== null && !prototypePlaying.value && store.visiblePaneCount.value <= 1
+)
 const { editor } = useI18n()
 // Until a room's document arrives there is nothing to edit, so its screen replaces the editor.
 const { pending: roomPending } = useRoomActions()
@@ -110,7 +124,7 @@ const { pending: roomPending } = useRoomActions()
             })
           "
           data-test-id="editor-start-preview"
-          @click="store.startPlay()"
+          @click="startPreview(store, $event)"
         >
           <icon-lucide-play class="size-3.5" />
         </IconButton>
@@ -165,4 +179,5 @@ const { pending: roomPending } = useRoomActions()
   <VariablesDialog />
   <StatusesDialog />
   <CommentDeleteDialog />
+  <PrototypePlayer v-if="prototypePlaying" @close="store.stopPlay()" />
 </template>

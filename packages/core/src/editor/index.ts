@@ -76,3 +76,16 @@ export type {
   GradientEdit,
   Tool
 } from './types'
+
+export {
+  prototypeConnection,
+  prototypeFrame,
+  prototypeFrames,
+  prototypeInteractions,
+  prototypeActiveInteractions,
+  hasPrototypeInteractions,
+  prototypeStart,
+  hasPrototypeClick
+} from './prototype/model'
+export type { PrototypeConnection } from './prototype/model'
+export { prototypeHotspots, type PrototypeHotspot } from './prototype/hotspots'

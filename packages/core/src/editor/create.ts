@@ -51,6 +51,7 @@ import { createLineEndActions } from './line-ends'
 import { createNodeActions } from './nodes'
 import { createPageActions } from './pages'
 import { createPlayActions } from './play/actions'
+import { createPrototypeActions } from './prototype/actions'
 import { createReadOnlyActions, guardReadOnly, guardUndo, READ_ONLY_TOOLS } from './read-only'
 import { createSelectionActions } from './selection'
 import { createShaderActions } from './shaders/actions'
@@ -321,6 +322,7 @@ export function createEditor(options?: EditorOptions) {
   const shaders = createShaderActions(ctx, nodes)
   const alignment = createAlignmentActions(ctx)
   const preview = createPlayActions(ctx)
+  const prototype = createPrototypeActions(ctx, nodes.updateNodeWithUndo, nodes.flushNudge)
   const clipboardBridge = createClipboardBridge(clipboard, selection)
   const componentBridge = createComponentBridge(components, selection, structure, pages)
   const structureBridge = createStructureBridge(structure, selection)
@@ -480,6 +482,7 @@ export function createEditor(options?: EditorOptions) {
 
     // Preview: instances with a behaviour respond to the pointer on this canvas
     ...preview,
+    ...prototype,
 
     // Bitmap-to-vector replacement
     ...vectorize,

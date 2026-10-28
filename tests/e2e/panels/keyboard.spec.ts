@@ -1,5 +1,6 @@
 import { expect, test, useEditorSetupWithClear } from '#tests/e2e/fixtures'
 import { propertySection } from '#tests/helpers/properties'
+import { getNodeById } from '#tests/helpers/store'
 
 const editor = useEditorSetupWithClear()
 
@@ -67,4 +68,28 @@ test('select and switch controls work from the keyboard', async () => {
   }, textId)
   expect(state?.textCase).toBe('UPPER')
   expect(state?.fontFeatures).toContainEqual({ tag: 'LIGA', enabled: false })
+})
+
+test('expanding a layer with the keyboard does not nudge its design', async () => {
+  const frameId = await editor.page.evaluate(() => {
+    const store = window.openPencil?.getStore?.()
+    if (!store) throw new Error('OpenPencil store not initialized')
+    const frame = store.graph.createNode('FRAME', store.state.currentPageId, {
+      name: 'Keyboard frame',
+      x: 120,
+      y: 140,
+      width: 180,
+      height: 100
+    })
+    store.graph.createNode('RECTANGLE', frame.id, { name: 'Keyboard child', width: 40, height: 30 })
+    store.select([frame.id])
+    return frame.id
+  })
+  await editor.canvas.waitForRender()
+  const frame = editor.page.getByRole('treeitem', { name: /Keyboard frame/ })
+  await frame.focus()
+  await frame.press('ArrowRight')
+  await expect(editor.page.getByRole('treeitem', { name: /Keyboard child/ })).toBeVisible()
+  expect((await getNodeById(editor.page, frameId))?.x).toBe(120)
+  expect((await getNodeById(editor.page, frameId))?.y).toBe(140)
 })

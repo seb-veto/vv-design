@@ -111,3 +111,5 @@ The fixed viewport dimensions above keep the example short. In a resizable shell
 - [ToolbarRoot](../api/components/toolbar-root)
 - [PageListRoot](../api/components/page-list-root)
 - [LayerTreeRoot](../api/components/layer-tree-root)
+
+The VV build also has [experimental native prototype connections](./prototype-connections.md), with editor undo and `.fig` persistence.

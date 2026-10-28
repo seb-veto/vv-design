@@ -361,3 +361,7 @@ Use the `render` tool for JSX strings. Use only the APIs exposed by the installe
 - Use `openpencil tool call` for MCP tools without a dedicated CLI command, and `eval` for Figma Plugin API operations not covered by any tool.
 - Use `--json` when piping CLI output to scripts.
 - In app mode, `eval` and MCP modifications are reflected live in the editor.
+
+## VV Design prototype increment
+
+The VV build's Prototype sidebar can create/edit/remove on-click instant frame connections and preview their actual rendered frames with pointer/keyboard hotspots, Back and Restart. Save the `.fig`, reopen it, and replay the hotspot before reporting persistence. Other imported reactions are retained but not editable/playable yet; canvas handles, animation, overlays and full prototype parity remain unfinished. The editor SDK methods documented in `packages/docs/programmable/sdk/guides/prototype-connections.md` are library APIs, not `figma` or `openpencil` scripting globals. No new CLI/MCP reaction setter is advertised by this increment.

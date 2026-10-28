@@ -9,6 +9,7 @@ import { useAIChat } from '@/app/ai/chat/use'
 import { isVersionHistoryOpen } from '@/app/cloud/integration'
 import { useEditorStore } from '@/app/editor/active-store'
 import { countIssues } from '@/app/editor/design-check/issues'
+import { useDesignMenuMessages } from '@/app/shell/menu/design-messages'
 import { CloudVersionHistory } from '@/components/cloud/integration'
 import { IS_VV_DESIGN } from '@/constants'
 import propertiesTabsTheme from '@/theme/panel/properties-tabs'
@@ -18,18 +19,20 @@ import CommentsPanel from './comments/CommentsPanel.vue'
 import DesignCheckPanel from './design-check/DesignCheckPanel.vue'
 import DesignPanel from './DesignPanel.vue'
 import ZoomDropdown from './editor/ZoomDropdown.vue'
+import PrototypePanel from './prototype/PrototypePanel.vue'
 
 const propertiesTabs = tv(propertiesTabsTheme)
 
 const { activeTab } = useAIChat()
 const propertiesTab = computed({
   get: () => (activeTab.value === 'ai' ? 'design' : activeTab.value),
-  set: (value: 'design' | 'code' | 'lint') => {
+  set: (value: 'design' | 'prototype' | 'code' | 'lint') => {
     activeTab.value = value
   }
 })
 const { panels } = useI18n()
 const checkMessages = useDesignCheckMessages()
+const designMessages = useDesignMenuMessages()
 const store = useEditorStore()
 
 const tabStyles = propertiesTabs()
@@ -68,6 +71,13 @@ const problemCount = computed(() => {
         >
           {{ panels.design }}
         </TabsTrigger>
+        <TabsTrigger
+          v-if="IS_VV_DESIGN"
+          value="prototype"
+          :class="tabStyles.trigger()"
+          :aria-description="designMessages.prototypeHelp"
+          >{{ designMessages.prototype }}</TabsTrigger
+        >
         <TabsTrigger
           v-if="!IS_VV_DESIGN || activeTab === 'code'"
           value="code"
@@ -108,6 +118,9 @@ const problemCount = computed(() => {
         <DesignPanel />
       </TabsContent>
 
+      <TabsContent v-if="IS_VV_DESIGN" value="prototype" class="flex min-h-0 flex-1 flex-col">
+        <PrototypePanel />
+      </TabsContent>
       <TabsContent
         value="code"
         class="flex min-h-0 flex-1 flex-col"
