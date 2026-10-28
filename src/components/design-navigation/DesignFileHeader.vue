@@ -27,7 +27,7 @@ const store = useEditorStore()
 const { menu, pages } = useI18n()
 const messages = useDesignMenuMessages()
 const { topMenus } = useAppMenu()
-const { rename, editingName, startRename, commitRename } = useDocumentNameRename(store)
+const { rename, renaming, editingName, startRename, commitRename } = useDocumentNameRename(store)
 const nameInput = templateRef<HTMLInputElement>('nameInput')
 const fileTrigger = templateRef<ComponentPublicInstance>('fileTrigger')
 function renameKeydown(event: KeyboardEvent) {
@@ -44,7 +44,7 @@ watch(nameInput, (input) => {
   if (input) void rename.focusInput(input)
 })
 const fileItems = computed(() => [
-  { label: pages.value.rename, action: startRename },
+  { label: pages.value.rename, action: startRename, disabled: renaming.value },
   { separator: true as const },
   ...topMenus.value
     .flatMap((group) => group.items)
@@ -71,6 +71,7 @@ const ui = useMenuUI({ content: 'min-w-56' })
           <DropdownMenuTrigger
             ref="fileTrigger"
             :aria-label="messages.fileMenu"
+            :aria-busy="renaming"
             :aria-description="messages.fileHelp"
             class="flex h-5 min-w-0 flex-1 items-center gap-2 rounded text-left text-[13px] font-semibold text-surface outline-none hover:bg-hover focus-visible:ring-1 focus-visible:ring-panel-focus"
           >

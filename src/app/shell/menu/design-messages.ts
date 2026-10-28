@@ -11,6 +11,7 @@ const messages = i18n('designMenu', {
   renameHelp: 'Enter saves the name. Escape cancels.',
   fileMenu: 'File actions',
   renameFile: 'Rename file',
+  renameFailed: 'Could not rename this design. The previous name was kept.',
   drafts: 'Drafts',
   recents: 'Recents',
   localFiles: 'Local files',

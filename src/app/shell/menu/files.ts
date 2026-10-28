@@ -11,6 +11,7 @@ import {
   MAX_REMOTE_DOCUMENT_BYTES,
   readBoundedBody
 } from '@/app/document/io/browser'
+import { vvDocumentName, vvFileURL } from '@/app/document/io/vv'
 import { notificationMessages } from '@/app/i18n/notifications'
 import { rememberRecentFile } from '@/app/recent-files'
 import { toast } from '@/app/shell/ui'
@@ -84,10 +85,12 @@ export async function openBrowserFileFromURL(url: URL, init?: RequestInit): Prom
   if (bytes.byteLength === 0) {
     throw new Error('Failed to fetch file: the response carried no body')
   }
+  const title = vvFileURL(url.href) ? await vvDocumentName(url) : null
   const name = fileNameFromURL(url)
   assertSupportedDesignFile(name)
   const file = new File([bytes], name, { type: 'application/octet-stream' })
-  await openFileInNewTab(file, undefined, url.href)
+  const store = await openFileInNewTab(file, undefined, url.href)
+  if (title !== null) store.state.documentName = title
 }
 
 function isSupportedDesignFile(fileName: string): boolean {
