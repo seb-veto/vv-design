@@ -1,10 +1,10 @@
 import { describe, test, expect } from 'bun:test'
 import { randomUUID } from 'node:crypto'
-import { mkdir, realpath, rm, symlink, writeFile } from 'node:fs/promises'
+import { mkdir, realpath, rm, symlink, writeFile, readFile, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
-import { resolveSafePath } from '#mcp/tool/output'
+import { resolveSafePath, writeInsideRoot } from '#mcp/tool/output'
 
 const isUnix = process.platform !== 'win32'
 const TEST_ID = randomUUID().slice(0, 8)
@@ -324,4 +324,19 @@ describe('MCP path scoping', () => {
       await rm(testDir, { recursive: true, force: true })
     }
   })
+})
+
+test('document writes replace a complete file without leaving a temporary copy', async () => {
+  const root = join(tmpdir(), `mcp-atomic-${randomUUID()}`)
+  try {
+    await mkdir(root)
+    await writeFile(join(root, 'design.fig'), 'old content')
+    await writeInsideRoot('design.fig', root, new Uint8Array([1, 2, 3]))
+    expect([...(await readFile(join(root, 'design.fig')))]).toEqual([1, 2, 3])
+    expect(await readdir(root)).toEqual(['design.fig'])
+    await expect(writeInsideRoot('../escape.fig', root, 'bad')).rejects.toThrow()
+    expect([...(await readFile(join(root, 'design.fig')))]).toEqual([1, 2, 3])
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
 })

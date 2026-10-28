@@ -1,4 +1,5 @@
 import { describeDiagnosticError, recordDocumentFailure } from '@/app/diagnostics'
+import { vvFileURL, writeVVFile } from '@/app/document/io/vv'
 import { storageLocationOf } from '@/app/integrations/storage/location'
 import type { StorageDocumentBinding } from '@/app/integrations/storage/types'
 import { persistStorageCanvasLocally } from '@/app/storage/sync/persist'
@@ -51,6 +52,11 @@ export function createDocumentWriter({
 
       const filePath = getFilePath()
       const fileHandle = getFileHandle()
+      const vvURL = vvFileURL(filePath)
+      if (vvURL) {
+        await writeVVFile(vvURL, data)
+        return await finishWrite(version)
+      }
       if (filePath && isTauri()) {
         const { writeFile: tauriWrite } = await import('@tauri-apps/plugin-fs')
         await tauriWrite(filePath, data)

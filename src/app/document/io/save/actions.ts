@@ -6,10 +6,11 @@ import { isFileWriteRefused } from '@/app/document/io/capability'
 import { documentNameFromFigPath } from '@/app/document/io/names'
 import { chooseBrowserFigSaveHandle, chooseTauriFigSavePath } from '@/app/document/io/save/targets'
 import type { DocumentSourceAccess } from '@/app/document/io/types'
+import { newVVFileURL } from '@/app/document/io/vv'
 import { createDocumentWriter } from '@/app/document/io/write'
-import { IS_TAURI } from '@/constants'
+import { IS_TAURI, IS_VV_DESIGN } from '@/constants'
 
-type SaveDocumentState = EditorState & { documentName: string }
+type SaveDocumentState = EditorState & { documentName: string; autosaveEnabled?: boolean }
 
 type SaveActionsOptions = Omit<DocumentSourceAccess, 'getSavedVersion'> & {
   state: SaveDocumentState
@@ -78,6 +79,33 @@ export function createSaveActions({
 
   async function saveFigFileAs() {
     const { data, version } = await buildVersionedFigFile()
+
+    if (IS_VV_DESIGN) {
+      const name = prompt(filesMessages.get().saveAsPrompt, `${state.documentName}.fig`)
+      if (!name?.trim()) return false
+      const previous = {
+        path: getFilePath(),
+        handle: getFileHandle(),
+        storage: getStorageBinding()
+      }
+      const path = newVVFileURL(name.trim()).href
+      setStorageBinding(null)
+      setFileHandle(null)
+      setFilePath(path)
+      try {
+        if (!(await writeFile(data, version))) throw new Error('VV Design could not save the file')
+        state.documentName = documentNameFromFigPath(name.trim())
+        state.autosaveEnabled = true
+        setDownloadName(`${state.documentName}.fig`)
+        setSourceIdentity({ handle: null, path })
+        return true
+      } catch (error) {
+        setFilePath(previous.path)
+        setFileHandle(previous.handle)
+        setStorageBinding(previous.storage)
+        throw error
+      }
+    }
 
     if (IS_TAURI) {
       const path = await chooseTauriFigSavePath()

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { constants } from 'node:fs'
 import {
   lstat,
@@ -5,6 +6,8 @@ import {
   open,
   readlink,
   realpath,
+  rename,
+  unlink,
   writeFile,
   type FileHandle
 } from 'node:fs/promises'
@@ -266,7 +269,17 @@ export async function writeInsideRoot(
   // with a symlink between resolveSafePath and the write would be detected
   // here — realpath follows the ancestor symlink and resolves outside root.
   await resolveSafePath(parentDir, root)
-  await writeFile(realPath, content)
+  // A failed save leaves the previous document intact.
+  const temporary = join(parentDir, `.${basename(realPath)}.${randomUUID()}.tmp`)
+  try {
+    await writeFile(temporary, content, { flag: 'wx', mode: 0o600 })
+    await resolveSafePath(parentDir, root)
+    await rename(temporary, realPath)
+  } finally {
+    await unlink(temporary).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== 'ENOENT') throw error
+    })
+  }
   await resolveSafePath(realPath, root)
   const byteLength =
     typeof content === 'string' ? Buffer.byteLength(content, 'utf8') : content.byteLength

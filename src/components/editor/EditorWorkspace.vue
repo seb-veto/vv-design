@@ -26,6 +26,7 @@ import StatusesDialog from '@/components/statuses/StatusesDialog.vue'
 import Toolbar from '@/components/toolbar/Toolbar.vue'
 import IconButton from '@/components/ui/button/IconButton.vue'
 import VariablesDialog from '@/components/variables/VariablesDialog.vue'
+import { IS_VV_DESIGN } from '@/constants'
 import splitterTheme from '@/theme/splitter'
 
 import WorkspacePill from './WorkspacePill.vue'
@@ -63,9 +64,10 @@ const { pending: roomPending } = useRoomActions()
   >
     <SplitterPanel
       id="layers"
-      :default-size="initialEditorLayout[0]"
-      :min-size="10"
-      :max-size="30"
+      :size-unit="IS_VV_DESIGN ? 'px' : '%'"
+      :default-size="IS_VV_DESIGN ? 288 : initialEditorLayout[0]"
+      :min-size="IS_VV_DESIGN ? 240 : 10"
+      :max-size="IS_VV_DESIGN ? 480 : 30"
       class="flex"
     >
       <LayersPanel />
@@ -76,7 +78,12 @@ const { pending: roomPending } = useRoomActions()
     >
       <div :class="horizontalSplitterStyles.divider()" />
     </SplitterResizeHandle>
-    <SplitterPanel id="canvas" :default-size="initialEditorLayout[1]" :min-size="30" class="flex">
+    <SplitterPanel
+      id="canvas"
+      :default-size="IS_VV_DESIGN ? undefined : initialEditorLayout[1]"
+      :min-size="30"
+      class="flex"
+    >
       <div class="relative flex min-w-0 flex-1">
         <CanvasSplitRoot />
         <ActiveRoomOverlay />
@@ -88,9 +95,10 @@ const { pending: roomPending } = useRoomActions()
     </SplitterResizeHandle>
     <SplitterPanel
       id="properties"
-      :default-size="initialEditorLayout[2]"
-      :min-size="10"
-      :max-size="30"
+      :size-unit="IS_VV_DESIGN ? 'px' : '%'"
+      :default-size="IS_VV_DESIGN ? 240 : initialEditorLayout[2]"
+      :min-size="IS_VV_DESIGN ? 240 : 10"
+      :max-size="IS_VV_DESIGN ? 480 : 30"
       class="flex flex-col"
     >
       <div class="flex shrink-0 items-center gap-1 border-b border-border px-1.5 py-1.5">

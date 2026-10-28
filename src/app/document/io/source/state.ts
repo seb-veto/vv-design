@@ -1,6 +1,7 @@
 import { shallowRef } from 'vue'
 
 import type { DocumentSourceIdentity } from '@/app/document/io/types'
+import { vvFileURL } from '@/app/document/io/vv'
 import type { StorageDocumentBinding } from '@/app/integrations/storage/types'
 import { isTauri } from '@/app/tauri/env'
 
@@ -41,7 +42,10 @@ export function createDocumentSourceState() {
      * browser document's path is the URL it was opened from, which nothing can write to.
      */
     hasWritableSource: () =>
-      !!storageBinding.value || !!fileHandle.value || (!!filePath.value && isTauri()),
+      !!storageBinding.value ||
+      !!fileHandle.value ||
+      (!!filePath.value && isTauri()) ||
+      !!vvFileURL(filePath.value),
     getSavedVersion: () => savedVersion,
     setSavedVersion: (version: number) => {
       savedVersion = version

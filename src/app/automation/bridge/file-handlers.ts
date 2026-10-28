@@ -12,6 +12,7 @@ import { openBrowserFileFromURL } from '@/app/shell/menu/files'
 import { openFileFromPath } from '@/app/shell/menu/use'
 import { closeTab, createTab, getActiveStore, getTabById } from '@/app/tabs'
 import { isTauri } from '@/app/tauri/env'
+import { IS_VV_DESIGN } from '@/constants'
 
 /** Where a browser app reads and writes the paths the file tools name: the MCP server's `/files/`. */
 export interface AutomationFiles {
@@ -66,7 +67,13 @@ export function createFileHandlers(files?: AutomationFiles) {
       throw new Error(`"${name}" has not been saved to a file yet; pass a path to save it`)
     }
     if (path && files && !isTauri()) {
-      await store.saveFigFileCopy((data) => writeThroughServer(files, path, data))
+      if (IS_VV_DESIGN) {
+        if (!(await store.saveFigFileToPath(files.url(path).href))) {
+          throw new Error(`Could not save "${name}"`)
+        }
+      } else {
+        await store.saveFigFileCopy((data) => writeThroughServer(files, path, data))
+      }
       return
     }
     if (path) await ensureTauriParentDirectory(path)

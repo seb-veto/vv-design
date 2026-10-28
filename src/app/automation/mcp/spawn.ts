@@ -506,22 +506,26 @@ function exitedStartupError(
   )
 }
 
+async function connectVVAutomation(): Promise<AutomationServerHandle> {
+  const response = await fetch('/__vv-design/runtime', { cache: 'no-store' })
+  if (!response.ok) throw new Error('VV Design automation is unavailable')
+  const parsed = v.safeParse(
+    v.object({ token: v.pipe(v.string(), v.minLength(32)) }),
+    await response.json()
+  )
+  if (!parsed.success) throw new Error('VV Design returned an invalid automation session')
+  runtimeAutomationAuthToken = parsed.output.token
+  if (!(await pollHealth(40, 250, parsed.output.token))) {
+    throw new Error('VV Design automation did not become ready')
+  }
+  return { disconnect: noop, authToken: parsed.output.token, managed: false }
+}
+
 async function startMCPIfNeeded(timing: MCPStartupTiming): Promise<AutomationServerHandle | null> {
   runtimeAutomationStartupError = null
   runtimeAutomationStartupFailure = null
   if (IS_VV_DESIGN && !import.meta.env.DEV) {
-    const response = await fetch('/__vv-design/runtime', { cache: 'no-store' })
-    if (!response.ok) throw new Error('VV Design automation is unavailable')
-    const parsed = v.safeParse(
-      v.object({ token: v.pipe(v.string(), v.minLength(32)) }),
-      await response.json()
-    )
-    if (!parsed.success) throw new Error('VV Design returned an invalid automation session')
-    runtimeAutomationAuthToken = parsed.output.token
-    if (!(await pollHealth(40, 250, parsed.output.token))) {
-      throw new Error('VV Design automation did not become ready')
-    }
-    return { disconnect: noop, authToken: parsed.output.token, managed: false }
+    return connectVVAutomation()
   }
   if (import.meta.env.DEV) return configureDevMCP()
   if (!isTauri()) return null

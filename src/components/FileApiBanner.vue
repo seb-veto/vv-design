@@ -4,13 +4,13 @@ import { useI18n } from '@open-pencil/vue/i18n'
 import { supportsFileSystemAccess } from '@/app/document/io/capability'
 import ExternalLink from '@/components/links/ExternalLink.vue'
 import AppBanner from '@/components/ui/feedback/AppBanner.vue'
-import { IS_TAURI } from '@/constants'
+import { IS_TAURI, IS_VV_DESIGN } from '@/constants'
 
 /** Neutral capability reference: the File System Access API support table. */
 const supportURL = 'https://caniuse.com/native-filesystem-api'
 
 const { files, common } = useI18n()
-const show = !IS_TAURI && !supportsFileSystemAccess()
+const show = !IS_VV_DESIGN && !IS_TAURI && !supportsFileSystemAccess()
 </script>
 
 <template>

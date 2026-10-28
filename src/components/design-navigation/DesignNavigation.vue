@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from '@open-pencil/vue/i18n'
+
 import { useEditorStore } from '@/app/editor/active-store'
 import { openSettingsDialog } from '@/app/settings/dialog'
 import IconButton from '@/components/ui/button/IconButton.vue'
@@ -7,6 +9,7 @@ import Tip from '@/components/ui/overlay/Tip.vue'
 const { active } = defineProps<{ active: 'file' | 'agents' | 'assets' }>()
 const emit = defineEmits<{ select: [panel: 'file' | 'agents' | 'assets'] }>()
 const store = useEditorStore()
+const { menu, panels } = useI18n()
 const navigation = [
   { id: 'file', label: 'File', help: 'Show pages and layers' },
   { id: 'agents', label: 'Agents', help: 'Open design agent chat' },
@@ -19,10 +22,10 @@ const navigation = [
     aria-label="Design navigation"
     class="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-border bg-panel py-3"
   >
-    <Tip label="Design settings">
+    <Tip :label="menu.settings">
       <button
         type="button"
-        aria-label="Design settings"
+        :aria-label="menu.settings"
         class="mb-3 flex size-8 items-center justify-center rounded text-surface outline-none hover:bg-hover focus-visible:ring-1 focus-visible:ring-panel-focus"
         @click="openSettingsDialog()"
       >
@@ -45,7 +48,7 @@ const navigation = [
       </button>
     </Tip>
     <div class="my-2 h-px w-6 bg-border" />
-    <Tip label="Edit design variables" side="right">
+    <Tip :label="panels.openVariables" side="right">
       <button
         type="button"
         aria-label="Variables"
@@ -57,7 +60,7 @@ const navigation = [
       </button>
     </Tip>
     <div class="flex-1" />
-    <IconButton label="Design settings" side="right" @click="openSettingsDialog()"
+    <IconButton :label="menu.settings" side="right" @click="openSettingsDialog()"
       ><icon-lucide-settings class="size-4"
     /></IconButton>
   </nav>

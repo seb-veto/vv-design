@@ -42,6 +42,7 @@ import {
   type Tab
 } from '@/app/tabs'
 import { syncTabAddress } from '@/app/tabs/address'
+import { restoreVVSession } from '@/app/tabs/vv-session'
 import { isTauri } from '@/app/tauri/env'
 import { offerUsageStatsPrompt, startSharing } from '@/app/telemetry'
 import ColorSpaceBanner from '@/components/canvas/ColorSpaceBanner.vue'
@@ -251,11 +252,17 @@ async function bindAssociatedFileOpen(): Promise<void> {
   await drainPendingOpens()
 }
 
+let stopVVSession: (() => void) | undefined
 let stopWebMCP: (() => void) | undefined
 
 onMounted(async () => {
   stopWebMCP = startWebMCP(getActiveStore)
   await startMCPRuntime(getActiveStore)
+  try {
+    stopVVSession = await restoreVVSession()
+  } catch (error) {
+    reportOpenFailure(error)
+  }
 
   try {
     await bindAssociatedFileOpen()
@@ -287,6 +294,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   stopWebMCP?.()
+  stopVVSession?.()
   void stopMCPRuntime()
   fileAssociationCleanup.value?.()
   roomLinksCleanup.value?.()

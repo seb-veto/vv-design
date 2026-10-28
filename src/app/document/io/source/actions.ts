@@ -11,6 +11,7 @@ import {
 import { createSaveActions } from '@/app/document/io/save/actions'
 import { createDocumentSourceState } from '@/app/document/io/source/state'
 import type { DocumentSourceAccess } from '@/app/document/io/types'
+import { vvFileURL } from '@/app/document/io/vv'
 import { createDocumentRecovery } from '@/app/document/recovery'
 import { recoveryEnabled } from '@/app/document/recovery/preferences'
 import { storageLocationOf } from '@/app/integrations/storage/location'
@@ -141,6 +142,7 @@ export function createDocumentSourceActions({
     setFilePath(isFig ? (path ?? null) : null)
     setDownloadName(figDownloadName(fileName, sourceFormat))
     setSourceIdentity({ handle: handle ?? null, path: path ?? null })
+    if (vvFileURL(path ?? null)) state.autosaveEnabled = true
     markDocumentSaved()
     void recovery.markProtectedVersion(changes.capture())
     trackDocumentFormat('document_opened', sourceFormat)
@@ -210,10 +212,12 @@ export function createDocumentSourceActions({
   }
 
   async function saveFigFileToPath(path: string): Promise<boolean> {
-    // Only the desktop app writes paths; a browser would fall back to a download.
-    if (!isTauri()) return false
+    if (!isTauri() && !vvFileURL(path)) return false
     const saved = await saveToNewTarget(() => setPlannedFilePath(path))
-    if (saved) void startWatchingFile()
+    if (saved) {
+      if (vvFileURL(path)) state.autosaveEnabled = true
+      void startWatchingFile()
+    }
     return saved
   }
 
