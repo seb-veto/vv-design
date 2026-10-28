@@ -7,6 +7,7 @@ import { useI18n } from '@open-pencil/vue/i18n'
 
 import { useAIChat } from '@/app/ai/chat/use'
 import ChatPanel from '@/components/ChatPanel.vue'
+import DesignFileHeader from '@/components/design-navigation/DesignFileHeader.vue'
 import DesignNavigation from '@/components/design-navigation/DesignNavigation.vue'
 import VVAgentPanel from '@/components/design-navigation/VVAgentPanel.vue'
 import AppMenu from '@/components/shell/AppMenu.vue'
@@ -40,7 +41,8 @@ const splitterStyles = tv(splitterTheme)({ direction: 'vertical' })
   >
     <DesignNavigation :active="activePanel" @select="selectPanel" />
     <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-      <AppMenu />
+      <DesignFileHeader v-if="IS_VV_DESIGN" />
+      <AppMenu v-else />
       <VVAgentPanel v-if="IS_VV_DESIGN && activePanel === 'agents'" />
       <ChatPanel v-if="!IS_VV_DESIGN" v-show="activePanel === 'agents'" />
       <AssetsPanel v-if="activePanel === 'assets'" />

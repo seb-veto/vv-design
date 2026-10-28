@@ -3,6 +3,7 @@ import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 import { useEditorStore } from '@/app/editor/active-store'
+import { usePanelOcclusion } from '@/app/shell/panel-occlusion'
 import { activeTab, getTabForStore } from '@/app/tabs'
 
 const store = useEditorStore()
@@ -22,7 +23,9 @@ function publish() {
     )
     return
   }
-  const { x, y, width, height } = panel.value.getBoundingClientRect()
+  const bounds = panel.value.getBoundingClientRect()
+  const { x, y, width, height } = bounds
+  const obscured = panelOccluded(bounds)
   window.parent.postMessage(
     {
       type: 'vv-design:agents',
@@ -32,13 +35,16 @@ function publish() {
       y,
       width,
       height,
+      obscured,
       documentName: store.state.documentName
     },
     parentOrigin
   )
 }
+const panelOccluded = usePanelOcclusion(publish)
 useResizeObserver(panel, publish)
 useEventListener(window, 'resize', publish)
+
 watch(() => [activeTab.value?.id, store.state.documentName], publish, { flush: 'post' })
 onMounted(async () => {
   try {

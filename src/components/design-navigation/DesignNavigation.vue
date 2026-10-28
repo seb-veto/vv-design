@@ -6,6 +6,8 @@ import { openSettingsDialog } from '@/app/settings/dialog'
 import IconButton from '@/components/ui/button/IconButton.vue'
 import Tip from '@/components/ui/overlay/Tip.vue'
 
+import DesignMenu from './DesignMenu.vue'
+
 const { active } = defineProps<{ active: 'file' | 'agents' | 'assets' }>()
 const emit = defineEmits<{ select: [panel: 'file' | 'agents' | 'assets'] }>()
 const store = useEditorStore()
@@ -20,18 +22,9 @@ const navigation = [
 <template>
   <nav
     aria-label="Design navigation"
-    class="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-border bg-panel py-3"
+    class="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-border bg-panel py-2"
   >
-    <Tip :label="menu.settings">
-      <button
-        type="button"
-        :aria-label="menu.settings"
-        class="mb-3 flex size-8 items-center justify-center rounded text-surface outline-none hover:bg-hover focus-visible:ring-1 focus-visible:ring-panel-focus"
-        @click="openSettingsDialog()"
-      >
-        <icon-lucide-pen-tool class="size-5" />
-      </button>
-    </Tip>
+    <DesignMenu />
     <Tip v-for="item in navigation" :key="item.id" :label="item.help" side="right">
       <button
         type="button"
@@ -42,7 +35,7 @@ const navigation = [
         @click="emit('select', item.id)"
       >
         <icon-lucide-file v-if="item.id === 'file'" class="size-5" />
-        <icon-lucide-sparkles v-else-if="item.id === 'agents'" class="size-5" />
+        <icon-lucide-sparkle v-else-if="item.id === 'agents'" class="size-5" />
         <icon-lucide-circle-plus v-else class="size-5" />
         <span>{{ item.label }}</span>
       </button>
