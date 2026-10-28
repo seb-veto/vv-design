@@ -55,7 +55,7 @@ import HomeWorkspace from '@/components/home/HomeWorkspace.vue'
 import RenameSelectionDialog from '@/components/selection/RenameSelectionDialog.vue'
 import LoadingScreen from '@/components/shell/LoadingScreen.vue'
 import TabBar from '@/components/TabBar.vue'
-import { IS_BROWSER, IS_CLOUD_SITE } from '@/constants'
+import { IS_BROWSER, IS_CLOUD_SITE, IS_VV_DESIGN } from '@/constants'
 
 const route = useRoute()
 /**
@@ -134,10 +134,13 @@ function openFirstTab(): Tab {
 
 // A first visit to the demo link is a first run too; the welcome there skips the tour offer.
 const welcomeShown =
-  createdInitialTab && (route.path === '/' || route.meta.demo) && !appRuntimeConfig.test
+  !IS_VV_DESIGN &&
+  createdInitialTab &&
+  (route.path === '/' || route.meta.demo) &&
+  !appRuntimeConfig.test
     ? offerAISetupOnFirstRun({ inTour: route.meta.demo === true })
     : false
-const sharingStarted = startSharing()
+const sharingStarted = IS_VV_DESIGN ? Promise.resolve() : startSharing()
 // One question per surface: a first run is asked about usage stats once the welcome closes.
 if (welcomeShown) {
   whenever(
@@ -148,7 +151,7 @@ if (welcomeShown) {
     },
     { once: true }
   )
-} else {
+} else if (!IS_VV_DESIGN) {
   // Asked once the window shows what it opened, not over the loading screen.
   whenever(
     () => !openingCloudLink.value,

@@ -37,9 +37,9 @@ export async function restoreVVSession(): Promise<() => void> {
   for (const path of session.files) {
     await openBrowserFileFromURL(new URL(path), { headers: await vvFileHeaders() })
   }
-  const selected = getTabsSnapshot().find(
-    (tab) => tab.store.getDocumentFilePath() === session.active
-  )
+  const selected = session.active
+    ? getTabsSnapshot().find((tab) => tab.store.getDocumentFilePath() === session.active)
+    : undefined
   if (selected) switchTab(selected.id)
   return watch(
     () => ({

@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/dialog'
 import AppSelect from '@/components/ui/select/AppSelect.vue'
 import { AppTabsContent, AppTabsList, AppTabsRoot, AppTabsTrigger } from '@/components/ui/tabs'
+import { IS_VV_DESIGN } from '@/constants'
 
 const { isMobile } = useViewportKind()
 const { settings, common } = useI18n()
@@ -179,13 +180,19 @@ function onOpenChange(open: boolean): void {
       </AppTabsContent>
       <AppTabsContent value="ai" as-child>
         <section class="flex min-h-0 min-w-0 flex-1 flex-col" data-test-id="settings-ai-panel">
-          <ModelsPanel>
+          <p v-if="IS_VV_DESIGN" class="p-4 text-xs text-muted">
+            Agents use BB conversations. Choose models and permissions in BB.
+          </p>
+          <ModelsPanel v-else>
             <ChatSettingsSection />
           </ModelsPanel>
         </section>
       </AppTabsContent>
       <AppTabsContent value="usage" as-child>
-        <SettingsPage><UsageSettingsPanel /></SettingsPage>
+        <SettingsPage
+          ><p v-if="IS_VV_DESIGN" class="text-xs text-muted">Usage is managed by BB.</p>
+          <UsageSettingsPanel v-else
+        /></SettingsPage>
       </AppTabsContent>
       <AppTabsContent value="diagnostics" as-child>
         <SettingsPage><DiagnosticsSettingsPanel /></SettingsPage>

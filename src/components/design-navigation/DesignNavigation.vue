@@ -12,7 +12,7 @@ const store = useEditorStore()
 const { menu, panels } = useI18n()
 const navigation = [
   { id: 'file', label: 'File', help: 'Show pages and layers' },
-  { id: 'agents', label: 'Agents', help: 'Open design agent chat' },
+  { id: 'agents', label: 'Agents', help: 'Open BB conversation' },
   { id: 'assets', label: 'Assets', help: 'Browse reusable components' }
 ] as const
 </script>
