@@ -1,22 +1,33 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { useI18n } from '@open-pencil/vue/i18n'
 
 import { useEditorStore } from '@/app/editor/active-store'
 import { openSettingsDialog } from '@/app/settings/dialog'
+import { useDesignMenuMessages } from '@/app/shell/menu/design-messages'
 import IconButton from '@/components/ui/button/IconButton.vue'
 import Tip from '@/components/ui/overlay/Tip.vue'
+import { IS_VV_DESIGN } from '@/constants'
 
 import DesignMenu from './DesignMenu.vue'
 
-const { active } = defineProps<{ active: 'file' | 'agents' | 'assets' }>()
-const emit = defineEmits<{ select: [panel: 'file' | 'agents' | 'assets'] }>()
+const { active } = defineProps<{ active: 'file' | 'agents' | 'assets' | 'tools' }>()
+const emit = defineEmits<{ select: [panel: 'file' | 'agents' | 'assets' | 'tools'] }>()
 const store = useEditorStore()
 const { menu, panels } = useI18n()
-const navigation = [
-  { id: 'file', label: 'File', help: 'Show pages and layers' },
-  { id: 'agents', label: 'Agents', help: 'Open BB conversation' },
-  { id: 'assets', label: 'Assets', help: 'Browse reusable components' }
-] as const
+const messages = useDesignMenuMessages()
+const navigation = computed(
+  () =>
+    [
+      { id: 'file', label: 'File', help: 'Show pages and layers' },
+      { id: 'agents', label: 'Agents', help: 'Open BB conversation' },
+      { id: 'assets', label: 'Assets', help: 'Browse reusable components' },
+      ...(IS_VV_DESIGN
+        ? [{ id: 'tools' as const, label: messages.value.tools, help: messages.value.toolsTip }]
+        : [])
+    ] as const
+)
 </script>
 
 <template>
@@ -29,6 +40,7 @@ const navigation = [
       <button
         type="button"
         :aria-label="item.label"
+        :aria-description="item.id === 'tools' ? messages.toolsHelp : undefined"
         :aria-pressed="active === item.id"
         :data-active="active === item.id"
         class="flex w-10 flex-col items-center gap-1 rounded-lg py-2 text-[11px] text-surface outline-none hover:bg-hover focus-visible:ring-1 focus-visible:ring-panel-focus data-[active=true]:bg-panel-selected-muted data-[active=true]:text-primary"
@@ -36,7 +48,8 @@ const navigation = [
       >
         <icon-lucide-file v-if="item.id === 'file'" class="size-5" />
         <icon-lucide-sparkle v-else-if="item.id === 'agents'" class="size-5" />
-        <icon-lucide-circle-plus v-else class="size-5" />
+        <icon-lucide-circle-plus v-else-if="item.id === 'assets'" class="size-5" />
+        <icon-lucide-briefcase-business v-else class="size-5" />
         <span>{{ item.label }}</span>
       </button>
     </Tip>

@@ -10,6 +10,7 @@ import { isVersionHistoryOpen } from '@/app/cloud/integration'
 import { useEditorStore } from '@/app/editor/active-store'
 import { countIssues } from '@/app/editor/design-check/issues'
 import { CloudVersionHistory } from '@/components/cloud/integration'
+import { IS_VV_DESIGN } from '@/constants'
 import propertiesTabsTheme from '@/theme/panel/properties-tabs'
 
 import CodePanel from './CodePanel.vue'
@@ -67,11 +68,17 @@ const problemCount = computed(() => {
         >
           {{ panels.design }}
         </TabsTrigger>
-        <TabsTrigger value="code" data-test-id="properties-tab-code" :class="tabStyles.trigger()">
+        <TabsTrigger
+          v-if="!IS_VV_DESIGN || activeTab === 'code'"
+          value="code"
+          data-test-id="properties-tab-code"
+          :class="tabStyles.trigger()"
+        >
           <icon-lucide-code :class="tabStyles.icon()" aria-hidden="true" />
           <span :class="tabStyles.label()">{{ panels.code }}</span>
         </TabsTrigger>
         <TabsTrigger
+          v-if="!IS_VV_DESIGN || activeTab === 'lint'"
           value="lint"
           data-test-id="properties-tab-lint"
           :aria-label="

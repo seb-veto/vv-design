@@ -6,6 +6,18 @@ import { locale, type Locale } from '@open-pencil/vue/i18n'
 const i18n = createI18n<Locale, 'en'>(locale, { baseLocale: 'en', get: async () => ({}) })
 const messages = i18n('designMenu', {
   mainMenu: 'Main menu',
+  tools: 'Tools',
+  toolsTip: 'Browse design tools',
+  toolsHelp: 'Show design tools. Enter or Space activates.',
+  builtInTools: 'Built-in tools',
+  searchTools: 'Search tools',
+  codeTool: 'Code',
+  codeToolDescription: 'Inspect and edit code for your selection.',
+  codeToolHelp: 'Open selection code in the right sidebar. Enter or Space activates.',
+  checkTool: 'Design check',
+  checkToolDescription: 'Find and fix issues on this page.',
+  checkToolHelp: 'Open page checks in the right sidebar. Enter or Space activates.',
+  noMatchingTools: 'No matching tools',
   menuHelp: 'Open commands with Enter or Space. Press Escape to close.',
   fileHelp: 'Open file actions with Enter or Space.',
   renameHelp: 'Enter saves the name. Escape cancels.',

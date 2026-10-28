@@ -9,6 +9,7 @@ import { useAIChat } from '@/app/ai/chat/use'
 import ChatPanel from '@/components/ChatPanel.vue'
 import DesignFileHeader from '@/components/design-navigation/DesignFileHeader.vue'
 import DesignNavigation from '@/components/design-navigation/DesignNavigation.vue'
+import ToolsPanel from '@/components/design-navigation/ToolsPanel.vue'
 import VVAgentPanel from '@/components/design-navigation/VVAgentPanel.vue'
 import AppMenu from '@/components/shell/AppMenu.vue'
 import { IS_VV_DESIGN } from '@/constants'
@@ -20,15 +21,16 @@ import PagesPanel from './PagesPanel.vue'
 
 const { panels } = useI18n()
 const { activeTab } = useAIChat()
-const activePanel = ref<'file' | 'assets' | 'agents'>('file')
+const activePanel = ref<'file' | 'assets' | 'agents' | 'tools'>('file')
 watch(activeTab, (tab) => {
   if (tab === 'ai') activePanel.value = 'agents'
   else if (activePanel.value === 'agents') activePanel.value = 'file'
 })
-function selectPanel(panel: 'file' | 'assets' | 'agents') {
+function selectPanel(panel: 'file' | 'assets' | 'agents' | 'tools') {
   activePanel.value = panel
   if (panel === 'agents') activeTab.value = 'ai'
-  else if (activeTab.value === 'ai') activeTab.value = 'design'
+  else if (activeTab.value === 'ai' || (IS_VV_DESIGN && panel !== 'tools'))
+    activeTab.value = 'design'
 }
 const splitterStyles = tv(splitterTheme)({ direction: 'vertical' })
 </script>
@@ -45,6 +47,7 @@ const splitterStyles = tv(splitterTheme)({ direction: 'vertical' })
       <AppMenu v-else />
       <VVAgentPanel v-if="IS_VV_DESIGN && activePanel === 'agents'" />
       <ChatPanel v-if="!IS_VV_DESIGN" v-show="activePanel === 'agents'" />
+      <ToolsPanel v-if="IS_VV_DESIGN && activePanel === 'tools'" />
       <AssetsPanel v-if="activePanel === 'assets'" />
       <SplitterGroup
         v-show="activePanel === 'file'"
