@@ -18,6 +18,24 @@ import {
 import { fetchStub } from '#tests/helpers/fetch'
 
 describe('MCP Vite development server', () => {
+  test('retains the embedding host filesystem boundary over editor preferences', () => {
+    const env = createAutomationEnvironment({
+      authToken: 'development-token',
+      baseEnv: { OPENPENCIL_MCP_ROOT: '/plugin/documents' },
+      configuration: {
+        authenticationEnabled: true,
+        rootDirectory: '/outside',
+        disabledTools: [],
+        scope: 'document'
+      },
+      corsOrigin: 'http://127.0.0.1:46179',
+      discoveryPath: null,
+      httpPort: 46180,
+      socketPath: null
+    })
+    expect(env.OPENPENCIL_MCP_ROOT).toBe('/plugin/documents')
+  })
+
   test('passes an explicit empty auth token when authentication is disabled', () => {
     const env = createAutomationEnvironment({
       authToken: 'development-token',

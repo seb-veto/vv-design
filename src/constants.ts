@@ -160,3 +160,4 @@ export const DEFAULT_TEXT_WIDTH = 200
 export const DEFAULT_TEXT_HEIGHT = 24
 
 export const ACP_PERMISSION_TIMEOUT_MS = 60_000
+export const IS_VV_DESIGN = typeof __VV_DESIGN__ === 'boolean' && __VV_DESIGN__

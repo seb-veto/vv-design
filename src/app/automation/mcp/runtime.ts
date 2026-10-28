@@ -214,7 +214,7 @@ export function createMCPRuntimeService(dependencies: MCPRuntimeDependencies) {
 
 /** The local server runs with the desktop app, and in development with the dev server. */
 export function localMCPAvailable(): boolean {
-  return import.meta.env.DEV || isTauri()
+  return import.meta.env.DEV || IS_VV_DESIGN || isTauri()
 }
 
 const appMCPRuntime = createMCPRuntimeService({
@@ -232,3 +232,4 @@ export const refreshMCPRuntime = appMCPRuntime.refresh
 export const restartMCPRuntime = () => appMCPRuntime.restart()
 export const startMCPRuntime = (getStore: () => EditorStore) => appMCPRuntime.start(getStore)
 export const stopMCPRuntime = () => appMCPRuntime.stop()
+import { IS_VV_DESIGN } from '@/constants'

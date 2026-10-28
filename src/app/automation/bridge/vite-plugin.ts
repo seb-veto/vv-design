@@ -42,7 +42,8 @@ export function createAutomationEnvironment(
     OPENPENCIL_MCP_TCP: '1',
     OPENPENCIL_MCP_AUTH_TOKEN: configuration.authenticationEnabled ? (authToken ?? '') : '',
     OPENPENCIL_MCP_CORS_ORIGIN: corsOrigin,
-    OPENPENCIL_MCP_ROOT: configuration.rootDirectory.trim() || process.cwd(),
+    OPENPENCIL_MCP_ROOT:
+      baseEnv.OPENPENCIL_MCP_ROOT || configuration.rootDirectory.trim() || process.cwd(),
     OPENPENCIL_MCP_DISABLED_TOOLS: serializeDisabledTools(configuration.disabledTools),
     OPENPENCIL_MCP_SCOPE: configuration.scope
   }

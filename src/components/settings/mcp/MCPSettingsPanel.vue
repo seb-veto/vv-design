@@ -29,7 +29,7 @@ import AppAlert from '@/components/ui/feedback/AppAlert.vue'
 import AppStatus from '@/components/ui/feedback/AppStatus.vue'
 import AppCopyField from '@/components/ui/input/AppCopyField.vue'
 import AppSwitch from '@/components/ui/toggle/AppSwitch.vue'
-import { DESKTOP_DOWNLOAD_URL, MCP_SERVER_DOCS_URL } from '@/constants'
+import { DESKTOP_DOWNLOAD_URL, IS_VV_DESIGN, MCP_SERVER_DOCS_URL } from '@/constants'
 
 import MCPFailureAlert from './MCPFailureAlert.vue'
 
@@ -121,6 +121,7 @@ const serverSetup = useMCPServerSetup(() =>
         >
           <AppSwitch
             v-model="mcpAuthenticationEnabled"
+            :disabled="IS_VV_DESIGN"
             :label="automation.authentication"
             data-test-id="settings-mcp-authentication"
           />
@@ -131,11 +132,12 @@ const serverSetup = useMCPServerSetup(() =>
         >
           <AppSwitch
             v-model="mcpSelectionOnly"
+            :disabled="IS_VV_DESIGN"
             :label="automation.selectionScope"
             data-test-id="settings-mcp-selection-scope"
           />
         </SettingsRow>
-        <SettingsRow :label="automation.rootDirectory">
+        <SettingsRow v-if="!IS_VV_DESIGN" :label="automation.rootDirectory">
           <template #description>
             <p class="mt-1 font-mono text-xs break-all text-surface">
               {{ mcpRootDirectory || automation.rootDirectoryDefault }}
@@ -171,6 +173,7 @@ const serverSetup = useMCPServerSetup(() =>
           <AppButton
             size="xs"
             variant="outline"
+            :disabled="IS_VV_DESIGN"
             data-test-id="settings-mcp-tool-access"
             @click="openToolAccessSettings('mcp')"
             >{{ settings.edit }}</AppButton

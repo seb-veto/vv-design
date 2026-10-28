@@ -15,6 +15,7 @@ import { APP_VERSION } from '@/app/runtime/version'
 import { decodeTauriStderr } from '@/app/shell/ui'
 import { resolvePlatformCommand } from '@/app/tauri/command'
 import { isTauri } from '@/app/tauri/env'
+import { IS_VV_DESIGN } from '@/constants'
 
 import { DEV_MCP_RESTART_PATH, type DevMCPConfiguration } from './dev-control'
 import {
@@ -50,9 +51,10 @@ export interface AutomationServerHandle {
   managed: boolean
 }
 
-const DEV_AUTOMATION_HTTP_URL = import.meta.env.DEV
-  ? __OPENPENCIL_LOCAL_AUTOMATION_HTTP_URL__
-  : `http://127.0.0.1:${AUTOMATION_HTTP_PORT}`
+const DEV_AUTOMATION_HTTP_URL =
+  import.meta.env.DEV || IS_VV_DESIGN
+    ? __OPENPENCIL_LOCAL_AUTOMATION_HTTP_URL__
+    : `http://127.0.0.1:${AUTOMATION_HTTP_PORT}`
 export function getMCPServerURL(): string {
   return `${DEV_AUTOMATION_HTTP_URL}/mcp`
 }
@@ -507,6 +509,20 @@ function exitedStartupError(
 async function startMCPIfNeeded(timing: MCPStartupTiming): Promise<AutomationServerHandle | null> {
   runtimeAutomationStartupError = null
   runtimeAutomationStartupFailure = null
+  if (IS_VV_DESIGN && !import.meta.env.DEV) {
+    const response = await fetch('/__vv-design/runtime', { cache: 'no-store' })
+    if (!response.ok) throw new Error('VV Design automation is unavailable')
+    const parsed = v.safeParse(
+      v.object({ token: v.pipe(v.string(), v.minLength(32)) }),
+      await response.json()
+    )
+    if (!parsed.success) throw new Error('VV Design returned an invalid automation session')
+    runtimeAutomationAuthToken = parsed.output.token
+    if (!(await pollHealth(40, 250, parsed.output.token))) {
+      throw new Error('VV Design automation did not become ready')
+    }
+    return { disconnect: noop, authToken: parsed.output.token, managed: false }
+  }
   if (import.meta.env.DEV) return configureDevMCP()
   if (!isTauri()) return null
 

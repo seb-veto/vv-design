@@ -49,6 +49,7 @@ export default defineConfig(async ({ command, mode }) => {
       alias: createOpenPencilAliases(__dirname, { cloud })
     },
     define: {
+      __VV_DESIGN__: JSON.stringify(env.VITE_VV_DESIGN === '1'),
       __OPENPENCIL_APP_VERSION__: JSON.stringify(packageJson.version),
       __OPENPENCIL_CLOUD_SITE__: JSON.stringify(cloudSite),
       __OPENPENCIL_OFFICIAL_CLOUD_URL__: JSON.stringify(

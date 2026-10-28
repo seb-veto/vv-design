@@ -12,7 +12,6 @@ import { countIssues } from '@/app/editor/design-check/issues'
 import { CloudVersionHistory } from '@/components/cloud/integration'
 import propertiesTabsTheme from '@/theme/panel/properties-tabs'
 
-import ChatPanel from './ChatPanel.vue'
 import CodePanel from './CodePanel.vue'
 import CommentsPanel from './comments/CommentsPanel.vue'
 import DesignCheckPanel from './design-check/DesignCheckPanel.vue'
@@ -22,6 +21,12 @@ import ZoomDropdown from './editor/ZoomDropdown.vue'
 const propertiesTabs = tv(propertiesTabsTheme)
 
 const { activeTab } = useAIChat()
+const propertiesTab = computed({
+  get: () => (activeTab.value === 'ai' ? 'design' : activeTab.value),
+  set: (value: 'design' | 'code' | 'lint') => {
+    activeTab.value = value
+  }
+})
 const { panels } = useI18n()
 const checkMessages = useDesignCheckMessages()
 const store = useEditorStore()
@@ -51,7 +56,7 @@ const problemCount = computed(() => {
     <CommentsPanel v-else-if="commenting" />
     <TabsRoot
       v-show="!commenting && !history"
-      v-model="activeTab"
+      v-model="propertiesTab"
       class="flex min-h-0 flex-1 flex-col"
     >
       <TabsList :class="tabStyles.list()">
@@ -65,10 +70,6 @@ const problemCount = computed(() => {
         <TabsTrigger value="code" data-test-id="properties-tab-code" :class="tabStyles.trigger()">
           <icon-lucide-code :class="tabStyles.icon()" aria-hidden="true" />
           <span :class="tabStyles.label()">{{ panels.code }}</span>
-        </TabsTrigger>
-        <TabsTrigger value="ai" data-test-id="properties-tab-ai" :class="tabStyles.trigger()">
-          <icon-lucide-sparkles :class="tabStyles.icon()" aria-hidden="true" />
-          <span :class="tabStyles.label()">{{ panels.ai }}</span>
         </TabsTrigger>
         <TabsTrigger
           value="lint"
@@ -88,14 +89,14 @@ const problemCount = computed(() => {
           />
           <span :class="tabStyles.label()">{{ checkMessages.tab }}</span>
         </TabsTrigger>
-        <ZoomDropdown v-if="activeTab === 'design'" />
+        <ZoomDropdown v-if="propertiesTab === 'design'" />
       </TabsList>
 
       <TabsContent
         value="design"
         class="flex min-h-0 flex-1 flex-col"
         :force-mount="true"
-        :hidden="activeTab !== 'design'"
+        :hidden="propertiesTab !== 'design'"
       >
         <DesignPanel />
       </TabsContent>
@@ -116,15 +117,6 @@ const problemCount = computed(() => {
         :hidden="activeTab !== 'lint'"
       >
         <DesignCheckPanel :active="activeTab === 'lint'" />
-      </TabsContent>
-
-      <TabsContent
-        value="ai"
-        class="flex min-h-0 flex-1 flex-col"
-        :force-mount="true"
-        :hidden="activeTab !== 'ai'"
-      >
-        <ChatPanel />
       </TabsContent>
     </TabsRoot>
   </aside>
