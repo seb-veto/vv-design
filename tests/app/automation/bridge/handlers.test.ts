@@ -99,6 +99,18 @@ describe('activate_document', () => {
       'Document "missing" not found'
     )
   })
+
+  test('tab targets use independent identities and reject a foreign editor target', async () => {
+    const first = createTab()
+    const second = createTab()
+    expect(first.id).toMatch(/^tab-[0-9a-f-]{36}$/)
+    expect(second.id).not.toBe(first.id)
+    const selected = getActiveTabId()
+    await expect(
+      request('activate_document', { document_id: `tab-${crypto.randomUUID()}` })
+    ).rejects.toThrow('not found')
+    expect(getActiveTabId()).toBe(selected)
+  })
 })
 
 describe('undo and redo', () => {

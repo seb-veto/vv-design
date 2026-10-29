@@ -36,7 +36,9 @@ function publish() {
       width,
       height,
       obscured,
-      documentName: store.state.documentName
+      documentName: store.state.documentName.slice(0, 512),
+      pageId: store.state.currentPageId,
+      pageName: (store.graph.getNode(store.state.currentPageId)?.name ?? '').slice(0, 512)
     },
     parentOrigin
   )
@@ -45,7 +47,16 @@ const panelOccluded = usePanelOcclusion(publish)
 useResizeObserver(panel, publish)
 useEventListener(window, 'resize', publish)
 
-watch(() => [activeTab.value?.id, store.state.documentName], publish, { flush: 'post' })
+watch(
+  () => [
+    activeTab.value?.id,
+    store.state.documentName,
+    store.state.currentPageId,
+    store.state.sceneVersion
+  ],
+  publish,
+  { flush: 'post' }
+)
 onMounted(async () => {
   try {
     const response = await fetch('/__vv-design/runtime', { cache: 'no-store' })

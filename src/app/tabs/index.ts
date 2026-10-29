@@ -56,10 +56,9 @@ const fileOpenCoordinator = createFileOpenCoordinator()
 const RECENT_FILE_THUMBNAIL_SIZE = 512
 const coverThumbnailListeners = new WeakMap<EditorStore, () => void>()
 
-let nextTabId = 1
-
 function generateTabId(): string {
-  return `tab-${nextTabId++}`
+  // Automation targets must not collide across editor windows.
+  return `tab-${crypto.randomUUID()}`
 }
 
 const tabsRef = shallowRef<Tab[]>([])
