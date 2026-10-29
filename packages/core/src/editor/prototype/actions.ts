@@ -5,7 +5,7 @@ import { assertNodeEditable } from '#core/editor/capabilities'
 import type { EditorContext } from '#core/editor/types'
 
 import {
-  hasPrototypeClick,
+  canAddPrototypeConnection,
   newPrototypeInteraction,
   prototypeConnection,
   prototypeFrame,
@@ -47,7 +47,8 @@ export function createPrototypeActions(
       const previous = interactions[index] as { actions: Array<Record<string, unknown>> }
       previous.actions[0].transitionNodeID = stringToGuid(destinationId)
     } else {
-      if (hasPrototypeClick(node)) throw new Error('This layer already has an on-click interaction')
+      if (!canAddPrototypeConnection(node))
+        throw new Error('This layer already has an incompatible on-click or hover interaction')
       interactions.push(newPrototypeInteraction(destinationId))
     }
     flushPending()

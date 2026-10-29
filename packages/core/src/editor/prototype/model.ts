@@ -120,3 +120,13 @@ export function hasPrototypeInteractions(graph: SceneGraph, pageId: string): boo
   }
   return false
 }
+
+/** Figma permits one click reaction, and disallows combining click with while-hovering. */
+export function canAddPrototypeConnection(node: SceneNode): boolean {
+  const raw = node.source.fig.rawNodeFields.prototypeInteractions
+  if (raw !== undefined && !Array.isArray(raw)) return false
+  return !prototypeActiveInteractions(node).some((value) => {
+    const type = record(record(value)?.event)?.interactionType
+    return type === 'ON_CLICK' || type === 'ON_HOVER'
+  })
+}

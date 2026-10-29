@@ -47,8 +47,10 @@ import CommentsLayer from '@/components/comments/CommentsLayer.vue'
 import IssueMarkerTooltip from '@/components/design-check/IssueMarkerTooltip.vue'
 import PreparationOverlay from '@/components/preparation/canvas/Overlay.vue'
 import FollowFrame from '@/components/presence/FollowFrame.vue'
+import PrototypeConnections from '@/components/prototype/PrototypeConnections.vue'
 import StatusLabelMenu from '@/components/statuses/StatusLabelMenu.vue'
 import AppDropOverlay from '@/components/ui/feedback/AppDropOverlay.vue'
+import { IS_VV_DESIGN } from '@/constants'
 import { motionStyles } from '@/theme/motion/styles'
 import { floatingSurface } from '@/theme/overlay'
 
@@ -293,6 +295,12 @@ const cursor = computed(() =>
           class="absolute inset-0 block size-full touch-none outline-none"
         />
         <PlayIslands :view="paneView" :drawn="drawnView" :canvas="canvasRef" />
+        <PrototypeConnections
+          v-if="IS_VV_DESIGN && propertiesTab === 'prototype' && isActivePane && !paneView.play"
+          :canvas="canvasRef"
+          :view="paneView"
+          :drawn="drawnView"
+        />
         <AppDropOverlay :visible="isDraggingOver" />
         <IssueMarkerTooltip :marker="hoveredIssueMarker" :canvas="canvasRef" />
         <StatusLabelMenu

@@ -85,7 +85,8 @@ export {
   prototypeActiveInteractions,
   hasPrototypeInteractions,
   prototypeStart,
-  hasPrototypeClick
+  hasPrototypeClick,
+  canAddPrototypeConnection
 } from './prototype/model'
 export type { PrototypeConnection } from './prototype/model'
 export { prototypeHotspots, type PrototypeHotspot } from './prototype/hotspots'

@@ -11,10 +11,13 @@ afterEach(() => {
 
 test('only the pinned file origin receives a write credential', async () => {
   let requests = 0
-  globalThis.fetch = (async () => {
-    requests++
-    return new Response()
-  }) as typeof fetch
+  globalThis.fetch = Object.assign(
+    async () => {
+      requests++
+      return new Response()
+    },
+    { preconnect: originalFetch.preconnect }
+  )
   for (const path of [
     'https://example.com/files/design.fig',
     'http://127.0.0.1:46181/files/design.fig',

@@ -6,6 +6,7 @@ import {
   prototypeInteractions,
   prototypeHotspots,
   hasPrototypeInteractions,
+  canAddPrototypeConnection,
   prototypeStart
 } from '@open-pencil/core'
 import { exportFigFile, parseFigFile } from '@open-pencil/core/io/formats/fig'
@@ -157,5 +158,13 @@ describe('native prototype connections', () => {
     expect(first.x).toBe(1)
     editor.undoAction()
     expect(first.x).toBe(0)
+  })
+  test('click creation respects Figma while-hovering conflicts without changing the imported reaction', () => {
+    const { editor, second, button } = scene()
+    const hover = { event: { interactionType: 'ON_HOVER' }, actions: [{ connectionType: 'BACK' }] }
+    button.source.fig.rawNodeFields.prototypeInteractions = [hover]
+    expect(canAddPrototypeConnection(button)).toBe(false)
+    expect(() => editor.setPrototypeConnection(button.id, second.id)).toThrow('incompatible')
+    expect(prototypeInteractions(button)).toEqual([hover])
   })
 })

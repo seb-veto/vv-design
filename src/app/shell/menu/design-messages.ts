@@ -7,6 +7,18 @@ const i18n = createI18n<Locale, 'en'>(locale, { baseLocale: 'en', get: async () 
 const messages = i18n('designMenu', {
   mainMenu: 'Main menu',
   prototype: 'Prototype',
+  canvasConnections: 'Prototype connections',
+  createConnection: 'Create prototype connection',
+  changeDestination: 'Change prototype destination',
+  chooseFrame: 'Choose a frame',
+  connectTip: 'Drag to connect',
+  reconnectTip: 'Drag to reconnect',
+  editConnection: 'Edit connection',
+  editConnectionHelp: 'Open this connection for editing. Enter or Space activates.',
+  connectionHandleHelp:
+    'Drag to a frame, or press Enter or Space to choose. Escape cancels. Delete removes an existing connection.',
+  connectionLabel: ({ source, destination }: { source: string; destination: string }) =>
+    `Connection from ${source} to ${destination}`,
   prototypeHelp: 'Edit prototype connections. Arrow keys switch tabs.',
   interactions: 'Interactions',
   addInteraction: 'Add interaction',

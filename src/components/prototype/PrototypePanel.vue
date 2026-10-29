@@ -3,7 +3,7 @@ import { computed } from 'vue'
 
 import {
   getNodeEditCapability,
-  hasPrototypeClick,
+  canAddPrototypeConnection,
   prototypeConnection,
   prototypeFrame,
   prototypeFrames,
@@ -89,7 +89,7 @@ function add() {
             !view.editable ||
             !view.frame ||
             view.frames.length < 2 ||
-            (!!view.node && hasPrototypeClick(view.node))
+            (!!view.node && !canAddPrototypeConnection(view.node))
           "
           @click="add"
           ><icon-lucide-plus class="size-3.5"
