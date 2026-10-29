@@ -8,6 +8,7 @@ import { useEditorStore } from '@/app/editor/active-store'
 import type { LayerIssueMark as LayerIssueMarkData } from '@/app/editor/design-check/layers'
 import LayerIssueMark from '@/components/design-check/LayerIssueMark.vue'
 import { COMPONENT_TYPES, nodeIcon } from '@/components/icons'
+import { IS_VV_DESIGN } from '@/constants'
 import layerTreeTheme from '@/theme/layer-tree'
 
 import LayerTreeActions from './LayerTreeActions.vue'
@@ -50,6 +51,7 @@ const modeNames = computed(() =>
 const layerTree = tv(layerTreeTheme)
 const styles = computed(() =>
   layerTree({
+    figma: IS_VV_DESIGN,
     expanded,
     actionsVisible: node.locked || !node.visible,
     selected,

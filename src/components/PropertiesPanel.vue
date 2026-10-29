@@ -35,7 +35,7 @@ const checkMessages = useDesignCheckMessages()
 const designMessages = useDesignMenuMessages()
 const store = useEditorStore()
 
-const tabStyles = propertiesTabs()
+const tabStyles = propertiesTabs({ figma: IS_VV_DESIGN })
 /** The Comment tool turns the sidebar into the comments list, as in Figma; the tabs keep their state. */
 const commenting = computed(() => store.state.activeTool === 'COMMENT')
 /** Version history takes the sidebar while it is open, for the document and a version alike. */

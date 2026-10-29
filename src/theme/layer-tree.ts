@@ -18,6 +18,12 @@ const layerTreeTheme = {
       'min-w-0 flex-1 rounded border border-accent bg-input px-1 py-0 text-xs text-surface outline-none'
   },
   variants: {
+    figma: {
+      true: {
+        row: 'outline-none group-focus-visible/layer:ring-1 group-focus-visible/layer:ring-inset group-focus-visible/layer:ring-panel-focus'
+      },
+      false: {}
+    },
     selected: {
       true: { row: 'bg-panel-selected text-on-accent hover:bg-panel-selected' },
       false: { row: 'bg-transparent text-surface hover:bg-hover' }
@@ -86,7 +92,16 @@ const layerTreeTheme = {
     // A hidden layer dims while its name still reads at 4.5:1. Once selected, fading the row would
     // fade its highlight too, so only the icon dims.
     { visible: false, selected: false, class: { row: 'opacity-65' } },
-    { visible: false, selected: true, class: { icon: 'opacity-50' } }
+    { visible: false, selected: true, class: { icon: 'opacity-50' } },
+    {
+      figma: true,
+      selected: true,
+      class: {
+        row: 'bg-layer-selected text-surface hover:bg-layer-selected',
+        icon: 'text-current'
+      }
+    },
+    { figma: true, component: true, class: { label: 'text-component', icon: 'text-component' } }
   ],
   defaultVariants: {
     selected: false,

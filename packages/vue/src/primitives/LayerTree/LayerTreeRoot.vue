@@ -39,6 +39,13 @@ const selectedIds = computed(() => editor.state.selectedIds)
 const focused = ref(false)
 const visibleRows = computed(() => visibleLayerRows(items.value, new Set(expanded.value)))
 let nodesById = new Map<string, LayerNode>()
+const selectedItems = computed(() => {
+  void treeVersion.value
+  return [...selectedIds.value].flatMap((id) => {
+    const node = nodesById.get(id)
+    return node ? [node] : []
+  })
+})
 let virtualizer: LayerTreeVirtualizer | null = null
 let selectionAnchorId: string | null = null
 let applyingSelection = false
@@ -268,6 +275,8 @@ provideLayerTree({
     as="div"
     class="flex min-h-0 flex-1 flex-col overflow-hidden"
     :items="items"
+    :model-value="selectedItems"
+    multiple
     :get-key="getKey"
     :get-children="getChildren"
   >

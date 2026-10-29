@@ -10,5 +10,14 @@ export default {
       'relative flex shrink-0 items-center gap-1 rounded px-1.5 py-1 text-xs text-muted outline-none hover:text-surface focus-visible:ring-1 focus-visible:ring-panel-focus data-[state=active]:font-semibold data-[state=active]:text-surface after:absolute after:inset-x-1.5 after:-bottom-[9px] after:h-0.5 after:rounded-full after:bg-transparent data-[state=active]:after:bg-accent',
     icon: 'size-3 shrink-0 data-[severity=error]:text-error data-[severity=warning]:text-warning',
     label: 'sr-only @[240px]/tabs:not-sr-only'
+  },
+  variants: {
+    figma: {
+      true: {
+        list: 'h-9 gap-1',
+        trigger: 'data-[state=active]:bg-hover data-[state=active]:after:bg-transparent'
+      },
+      false: {}
+    }
   }
 } as const

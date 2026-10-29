@@ -242,6 +242,7 @@ function onFocusOut(event: FocusEvent, actions: LayerTreeRootActions) {
                   "
                 >
                   <LayerTreeItem
+                    class="group/layer"
                     v-slot="{
                       node,
                       isSelected,
